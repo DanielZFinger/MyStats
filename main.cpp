@@ -3,6 +3,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
+#include "pctMileMarkers.cpp"
 using namespace std;
 
 int main() {
@@ -54,20 +56,71 @@ int main() {
     fullTime="<time>"+year1+"-"+month1+"-"+day1+"T"+time;
     cout<<fullTime;
 
+    //getting coords of start and finish
+    string startCoordsLat;
+    string startCoordsLon;
+    string finishCoordsLat;
+    string finishCoordsLon;
+    startCoordsLat=to_string(coordsFuncLat(startMile));
+    startCoordsLon=to_string(coordsFuncLon(startMile));
+    finishCoordsLat=to_string(coordsFuncLat(finishMile));
+    finishCoordsLon=to_string(coordsFuncLon(finishMile));
+
 
 
     //editing gpx file
     string full;
     string checker = "/ele";
     int count = 0;
-    float starting = startMile*245+17;
-    cout<<to_string(starting)+"\n";
-    float finishing = finishMile*245+19;
-    cout<<to_string(finishing)+"\n";
+    int countStart=0;
+    int countFinish=0;
+
+    //get line number for start and finish
+    myFile.open("pct500.gpx", ios::in);
+    if (myFile.is_open()){
+        string data;
+        while (getline(myFile, data)) {
+            size_t findLat = data.find(startCoordsLat.substr(0,6));
+            size_t findLon = data.find(startCoordsLon.substr(0,7));
+            if (findLat!=std::string::npos && findLon!=std::string::npos){
+                    cout<<"found\n";
+                    cout<<startCoordsLat<<" is start coords Lat\n";
+                    cout<<startCoordsLon<<" is start coords Lon\n";
+                    cout<<data<<" is data\n\n\n";
+                    break;
+                }
+                countStart++;
+        }
+    }
+    myFile.close();
+
+
+    myFile.open("pct500.gpx", ios::in);
+    if (myFile.is_open()){
+        string data;
+        while (getline(myFile, data)) {
+            size_t findLat2 = data.find(finishCoordsLat.substr(0,6));
+            size_t findLon2 = data.find(finishCoordsLon.substr(0,8));
+            if (findLat2!=std::string::npos && findLon2!=std::string::npos){
+                    cout<<"found\n";
+                    cout<<finishCoordsLat<<" is finish coords Lat\n";
+                    cout<<finishCoordsLon<<" is finish coords Lon\n";
+                    cout<<data<<" is data\n\n\n";
+                    break;
+                }
+                countFinish++;
+        }
+    }
+    myFile.close();
+
+
+
+    //change these to pinpoints lat lon coords
+    //change theseto pinpoints lat lon coords
     string front;
 
-    int   var_start = (int)starting;
-    int   var_fin = (int)finishing;
+    int   var_start = countStart-1;
+    int   var_fin = countFinish+15;
 
     myFile.open("pct500.gpx", ios::in);
     if (myFile.is_open()) {
