@@ -8,6 +8,8 @@
 using namespace std;
 
 int main() {
+
+    //vars
     float startMile;
     float finishMile;
     char year[100];
@@ -17,9 +19,7 @@ int main() {
     char day[100];
     string day1;
     string time = "14:00:00Z</time>\n";
-
     int startTime1;
-
     int finishTime1;
     string fullTime;
     ofstream newFile;
@@ -93,7 +93,9 @@ int main() {
     int countFinish=0;
 
     //get line number for start and finish
-    myFile.open("pct500.gpx", ios::in);
+
+    //line starts
+    myFile.open("fullPCT.gpx", ios::in);
     if (myFile.is_open()){
         string data;
         while (getline(myFile, data)) {
@@ -111,8 +113,8 @@ int main() {
     }
     myFile.close();
 
-
-    myFile.open("pct500.gpx", ios::in);
+    //line for finish
+    myFile.open("fullPCT.gpx", ios::in);
     if (myFile.is_open()){
         string data;
         while (getline(myFile, data)) {
@@ -131,16 +133,14 @@ int main() {
     myFile.close();
 
 
-
-    //change these to pinpoints lat lon coords
-    //change theseto pinpoints lat lon coords
+    // parsing gpx file and inputting time stamps
     string front;
 
     int   var_start = countStart-1;
-    int   var_fin = countFinish+45;
+    int   var_fin = countFinish+15;
     int totalLines = var_fin-var_start;
     cout<<"total Lines is "<<to_string(totalLines);
-    totalLines = totalLines/3;
+    totalLines = totalLines;
     cout<<"total lines post division is "<<to_string(totalLines);
     int increments = totalTime/totalLines;
     cout<<"increments is "<<to_string(increments);
@@ -149,16 +149,15 @@ int main() {
     int currentMinute=0;
     int currentSecond=0;
 
-    myFile.open("pct500.gpx", ios::in);
+    myFile.open("fullPCT.gpx", ios::in);
     if (myFile.is_open()) {
         string data;
         while (getline(myFile, data)) {
-            if(count<19){
+            if(count<17){
                 front=front+data+"\n";
             }
             else if(var_start<count && count<var_fin){
-                // cout<<"start is "<<var_start<<"   fin is "<<var_fin<<"   c ount is "<<count;
-                full=full+data+"\n";
+                full=full+data.substr(0,data.size()-8);
                 size_t found = data.find(checker);
                 if (found!=std::string::npos){
                     string tempHour = to_string(currentHour);
@@ -173,7 +172,7 @@ int main() {
                     if(currentSecond<10){
                         tempSecond="0"+to_string(currentSecond);
                     }
-                    full=full+fullTime+tempHour+":"+tempMinute+":"+tempSecond+"Z"+"</time>";
+                    full=full+fullTime+tempHour+":"+tempMinute+":"+tempSecond+"Z"+"</time></trkpt>\n";
                     currentSecond=currentSecond+increments;
                     if(currentSecond>59){
                         currentMinute++;
@@ -192,7 +191,7 @@ int main() {
         }
         myFile.close();
     }
-    full=front+full;
+    full=front+full+"</trkseg></trk></gpx>";
     newFile.open("newFile1.gpx", ios::out);
     if(newFile.is_open()){
         newFile<<full;
